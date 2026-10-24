@@ -2,8 +2,10 @@ name: Build Windows
 
 on:
   push:
-  pull_request:
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   windows:
@@ -27,7 +29,30 @@ jobs:
           cmake -S . -B build -G "Visual Studio 17 2022" -A x64 $asio
 
       - name: Build
-        run: cmake --build build --config Release --parallel --target Auralis_VST3 Auralis_Standalone auralis_core_tests
+        shell: pwsh
+        run: |
+          cmake --build build --config Release --parallel --target Auralis_VST3 Auralis_Standalone auralis_core_tests -- /v:minimal /nologo 2>&1 | Tee-Object -FilePath build.log
+          if ($LASTEXITCODE -ne 0) { exit 1 }
+
+      - name: Report errors 1
+        if: failure()
+        shell: pwsh
+        run: |
+          $e = Get-Content build.log | Select-String -Pattern ": (fatal )?error " | ForEach-Object { ($_.Line -replace '.*\\auralis\\auralis\\','').Trim() } | Select-Object -Unique
+          $e | Out-File errors.txt
+          $e | Select-Object -First 10 | ForEach-Object { Write-Output "::error::$_" }
+      - name: Report errors 2
+        if: failure()
+        shell: pwsh
+        run: Get-Content errors.txt -ErrorAction SilentlyContinue | Select-Object -Skip 10 -First 10 | ForEach-Object { Write-Output "::error::$_" }
+      - name: Report errors 3
+        if: failure()
+        shell: pwsh
+        run: Get-Content errors.txt -ErrorAction SilentlyContinue | Select-Object -Skip 20 -First 10 | ForEach-Object { Write-Output "::error::$_" }
+      - name: Report errors 4
+        if: failure()
+        shell: pwsh
+        run: Get-Content errors.txt -ErrorAction SilentlyContinue | Select-Object -Skip 30 -First 10 | ForEach-Object { Write-Output "::error::$_" }
 
       - name: Unit tests
         run: ctest --test-dir build -C Release --output-on-failure
@@ -40,7 +65,7 @@ jobs:
           Copy-Item -Recurse build/Auralis_artefacts/Release/VST3/Auralis.vst3 dist/
           Copy-Item README.md dist/
           Compress-Archive -Path dist/* -DestinationPath Auralis-Windows-x64.zip
-          choco install innosetup --no-progress -y
+          if (-not (Test-Path "C:\Program Files (x86)\Inno Setup 6\ISCC.exe")) { choco install innosetup --no-progress -y }
           & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer/Auralis.iss
 
       - uses: actions/upload-artifact@v4
@@ -49,3 +74,12 @@ jobs:
           path: |
             Auralis-Windows-x64.zip
             installer/Output/*.exe
+
+      - name: Publish release
+        if: github.ref == 'refs/heads/main'
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release delete latest --yes --cleanup-tag 2>$null
+          gh release create latest Auralis-Windows-x64.zip (Get-ChildItem installer/Output/*.exe).FullName --title "Auralis (latest build)" --notes "Auralis.exe + Auralis.vst3. Setup.exe installs both."
