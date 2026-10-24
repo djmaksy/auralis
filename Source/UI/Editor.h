@@ -61,7 +61,8 @@ private:
     std::unique_ptr<Timeline> timeline;
     std::unique_ptr<FullscreenWindow> fullscreen;
 
-    juce::Label logo;
+    class Logo : public juce::Component { public: void paint (juce::Graphics&) override; };
+    Logo logo;
     juce::TextButton prevBtn { "<" }, nextBtn { ">" }, saveBtn, delBtn, exportBtn, langBtn, fullBtn, gearBtn, minBtn { "-" }, closeBtn { "x" };
     juce::ComboBox presetBox, aspectBox, resBox, fpsBox;
     juce::TextButton openBtn, playBtn, lyricsBtn, loadLyricsBtn, saveLrcBtn, recBtn;

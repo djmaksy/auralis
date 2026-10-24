@@ -35,6 +35,32 @@ juce::Array<juce::File> AuralisEditor::userPresets() const
     return a;
 }
 
+// ============================================================================ logo: "AURALIS by Dj Maksy"
+void AuralisEditor::Logo::paint (juce::Graphics& g)
+{
+    const float h = (float) getHeight();
+    // mark: a ring of particles with a glowing core
+    const float r = h * 0.36f, cx = r + 3.f, cy = h * 0.5f;
+    for (int i = 0; i < 40; ++i)
+    {
+        const float a = (float) i / 40.f * juce::MathConstants<float>::twoPi;
+        const float rr = r * (1.f + 0.13f * std::sin (a * 8.f));
+        const float d = 1.2f + 0.9f * (0.5f + 0.5f * std::sin (a * 3.f));
+        g.setColour (colours::accent.withAlpha (0.55f + 0.45f * (0.5f + 0.5f * std::cos (a * 5.f))));
+        g.fillEllipse (cx + rr * std::cos (a) - d * 0.5f, cy + rr * std::sin (a) - d * 0.5f, d, d);
+    }
+    g.setGradientFill (juce::ColourGradient (colours::accent2, cx, cy, colours::accent2.withAlpha (0.f), cx + r * 0.6f, cy, true));
+    g.fillEllipse (cx - r * 0.6f, cy - r * 0.6f, r * 1.2f, r * 1.2f);
+
+    const float tx = cx + r + 9.f;
+    g.setColour (colours::accent);
+    g.setFont (juce::FontOptions (h * 0.48f, juce::Font::bold));
+    g.drawText ("AURALIS", juce::Rectangle<float> (tx, h * 0.02f, (float) getWidth() - tx, h * 0.56f), juce::Justification::bottomLeft);
+    g.setColour (colours::text.withAlpha (0.75f));
+    g.setFont (juce::FontOptions (h * 0.27f, juce::Font::italic));
+    g.drawText ("by Dj Maksy", juce::Rectangle<float> (tx + 1.f, h * 0.58f, (float) getWidth() - tx, h * 0.36f), juce::Justification::topLeft);
+}
+
 // ============================================================================ lyrics dialog
 class LyricsDialog : public juce::Component
 {
@@ -124,9 +150,6 @@ AuralisEditor::AuralisEditor (AuralisProcessor& p) : AudioProcessorEditor (p), p
     addAndMakeVisible (*content);
     auto add = [this] (juce::Component& c) { content->addAndMakeVisible (c); };
 
-    logo.setText ("AURALIS", juce::dontSendNotification);
-    logo.setFont (juce::FontOptions (21.f, juce::Font::bold));
-    logo.setColour (juce::Label::textColourId, colours::accent);
     logo.setInterceptsMouseClicks (false, false);
     add (logo);
 
@@ -228,9 +251,9 @@ void AuralisEditor::resized()
     // header
     juce::Rectangle<int> h (0, 0, kW, 52);
     h = h.reduced (12, 10);
-    logo.setBounds (h.removeFromLeft (118));
+    logo.setBounds (h.removeFromLeft (150).withTrimmedTop (-6).withTrimmedBottom (-6)); h.removeFromLeft (6);
     prevBtn.setBounds (h.removeFromLeft (28)); h.removeFromLeft (4);
-    presetBox.setBounds (h.removeFromLeft (250)); h.removeFromLeft (4);
+    presetBox.setBounds (h.removeFromLeft (212)); h.removeFromLeft (4);
     nextBtn.setBounds (h.removeFromLeft (28)); h.removeFromLeft (8);
     saveBtn.setBounds (h.removeFromLeft (92)); h.removeFromLeft (4);
     delBtn.setBounds (h.removeFromLeft (80));

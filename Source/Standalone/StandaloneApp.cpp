@@ -12,7 +12,7 @@ class MainWindow : public juce::DocumentWindow
 {
 public:
     explicit MainWindow (juce::StandalonePluginHolder& h)
-        : juce::DocumentWindow ("Auralis", colours::bg, 0), holder (h)
+        : juce::DocumentWindow ("Auralis by Dj Maksy", colours::bg, 0), holder (h)
     {
         setUsingNativeTitleBar (false);
         setTitleBarHeight (0);
