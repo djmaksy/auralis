@@ -59,6 +59,9 @@ void AuralisEditor::Logo::paint (juce::Graphics& g)
     g.setColour (colours::text.withAlpha (0.75f));
     g.setFont (juce::FontOptions (h * 0.27f, juce::Font::italic));
     g.drawText ("by DJ Maksy", juce::Rectangle<float> (tx + 1.f, h * 0.58f, (float) getWidth() - tx, h * 0.36f), juce::Justification::topLeft);
+    g.setColour (colours::dim);
+    g.setFont (juce::FontOptions (h * 0.24f));
+    g.drawText ("v" JucePlugin_VersionString, juce::Rectangle<float> (tx + 1.f, h * 0.58f, (float) getWidth() - tx - 2.f, h * 0.36f), juce::Justification::topRight);
 }
 
 // ============================================================================ lyrics dialog

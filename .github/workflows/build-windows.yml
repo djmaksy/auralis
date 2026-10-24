@@ -63,16 +63,18 @@ jobs:
           New-Item -ItemType Directory -Force dist | Out-Null
           Copy-Item build/Auralis_artefacts/Release/Standalone/Auralis.exe dist/
           Copy-Item -Recurse build/Auralis_artefacts/Release/VST3/Auralis.vst3 dist/
-          Copy-Item README.md dist/; Copy-Item README.ru.md dist/
-          Compress-Archive -Path dist/* -DestinationPath Auralis-Windows-x64.zip
+          Copy-Item README.md dist/; Copy-Item README.ru.md dist/; Copy-Item CHANGELOG.md dist/
+          $v = (Get-Content VERSION -First 1).Trim()
+          Compress-Archive -Path dist/* -DestinationPath "Auralis-$v-Windows-x64.zip"
           if (-not (Test-Path "C:\Program Files (x86)\Inno Setup 6\ISCC.exe")) { choco install innosetup --no-progress -y }
-          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer/Auralis.iss
+          $v = (Get-Content VERSION -First 1).Trim()
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "/DAppVersion=$v" installer/Auralis.iss
 
       - uses: actions/upload-artifact@v4
         with:
           name: Auralis-Windows-x64
           path: |
-            Auralis-Windows-x64.zip
+            Auralis-*-Windows-x64.zip
             installer/Output/*.exe
 
       - name: Publish release
@@ -81,5 +83,13 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          $v = (Get-Content VERSION -First 1).Trim()
+          # notes = this version's section of CHANGELOG.md
+          $lines = Get-Content CHANGELOG.md -Encoding UTF8
+          $start = [array]::IndexOf($lines, "## $v")
+          $notes = @()
+          if ($start -ge 0) { for ($i = $start + 1; $i -lt $lines.Count -and -not $lines[$i].StartsWith("## "); $i++) { $notes += $lines[$i] } }
+          ($notes -join "`n").Trim() | Out-File notes.md -Encoding utf8
           gh release delete latest --yes --cleanup-tag 2>$null
-          gh release create latest Auralis-Windows-x64.zip (Get-ChildItem installer/Output/*.exe).FullName --title "Auralis (latest build)" --notes "Auralis.exe + Auralis.vst3. Setup.exe installs both."
+          gh release delete "v$v" --yes --cleanup-tag 2>$null
+          gh release create "v$v" (Get-ChildItem "Auralis-$v-Windows-x64.zip").FullName (Get-ChildItem installer/Output/*.exe).FullName --title "Auralis $v" --notes-file notes.md --latest

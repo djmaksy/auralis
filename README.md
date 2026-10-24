@@ -7,10 +7,10 @@ frame by frame into an MP4 with your audio, up to 4K. A standalone app works wit
 
 ## Download
 
-Latest Windows build: **[Releases → latest](https://github.com/djmaksy/auralis/releases/tag/latest)**
+Latest Windows build: **[Releases → latest](https://github.com/djmaksy/auralis/releases/latest)**
 
-- `Auralis-1.0.0-Setup.exe` — installer (app + VST3 plug-in)
-- `Auralis-Windows-x64.zip` — `Auralis.exe` and `Auralis.vst3` without an installer
+- `Auralis-<version>-Setup.exe` — installer (app + VST3 plug-in)
+- `Auralis-<version>-Windows-x64.zip` — `Auralis.exe` and `Auralis.vst3` without an installer
 
 Windows SmartScreen may warn about an unknown publisher because the build is not code-signed:
 click **More info → Run anyway**. Close your DAW before installing an update.
@@ -80,7 +80,7 @@ CMake options:
 - `-DAURALIS_WITH_WHISPER=OFF` — build without recognition.
 
 Every push to `main` is built by GitHub Actions (`.github/workflows/build-windows.yml`), which
-publishes the installer and zip to the `latest` release.
+publishes the installer and zip as a release named after `VERSION`. See [CHANGELOG.md](CHANGELOG.md).
 
 ## Project layout
 

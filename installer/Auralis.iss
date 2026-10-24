@@ -1,6 +1,8 @@
 ; Inno Setup script: installs the app and the VST3 plug-in.
 #define AppName "Auralis"
-#define AppVersion "1.0.0"
+#ifndef AppVersion
+  #define AppVersion "0.0.0"
+#endif
 
 [Setup]
 AppId={{6D7B2E4A-3C55-4B5E-9F0B-0A0A11500001}
