@@ -6,7 +6,7 @@
 AppId={{6D7B2E4A-3C55-4B5E-9F0B-0A0A11500001}
 AppName={#AppName}
 AppVersion={#AppVersion}
-AppPublisher=Dj Maksy
+AppPublisher=DJ Maksy
 DefaultDirName={autopf}\{#AppName}
 DefaultGroupName={#AppName}
 OutputBaseFilename=Auralis-{#AppVersion}-Setup
@@ -24,7 +24,7 @@ Name: "ru"; MessagesFile: "compiler:Languages\Russian.isl"
 Name: "en"; MessagesFile: "compiler:Default.isl"
 
 [Components]
-Name: "app";  Description: "Auralis by Dj Maksy (standalone app)"; Types: full compact custom; Flags: fixed
+Name: "app";  Description: "Auralis by DJ Maksy (standalone app)"; Types: full compact custom; Flags: fixed
 Name: "vst3"; Description: "VST3 plug-in"; Types: full custom
 
 [Files]

@@ -43,7 +43,7 @@ if (AURALIS_WITH_WHISPER)
 endif()
 
 juce_add_plugin (Auralis
-    COMPANY_NAME            "Dj Maksy"
+    COMPANY_NAME            "DJ Maksy"
     BUNDLE_ID               "app.auralis.visualizer"
     PLUGIN_MANUFACTURER_CODE Arls
     PLUGIN_CODE             Avis

@@ -35,7 +35,7 @@ juce::Array<juce::File> AuralisEditor::userPresets() const
     return a;
 }
 
-// ============================================================================ logo: "AURALIS by Dj Maksy"
+// ============================================================================ logo: "AURALIS by DJ Maksy"
 void AuralisEditor::Logo::paint (juce::Graphics& g)
 {
     const float h = (float) getHeight();
@@ -58,7 +58,7 @@ void AuralisEditor::Logo::paint (juce::Graphics& g)
     g.drawText ("AURALIS", juce::Rectangle<float> (tx, h * 0.02f, (float) getWidth() - tx, h * 0.56f), juce::Justification::bottomLeft);
     g.setColour (colours::text.withAlpha (0.75f));
     g.setFont (juce::FontOptions (h * 0.27f, juce::Font::italic));
-    g.drawText ("by Dj Maksy", juce::Rectangle<float> (tx + 1.f, h * 0.58f, (float) getWidth() - tx, h * 0.36f), juce::Justification::topLeft);
+    g.drawText ("by DJ Maksy", juce::Rectangle<float> (tx + 1.f, h * 0.58f, (float) getWidth() - tx, h * 0.36f), juce::Justification::topLeft);
 }
 
 // ============================================================================ lyrics dialog

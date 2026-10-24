@@ -182,7 +182,7 @@ void ExportWindow::launch (ExportRequest r, bool ru, Done d)
 void ExportWindow::closeAll() { openWindows().clear (true); }
 
 ExportWindow::ExportWindow (ExportRequest r, bool ru, Done d)
-    : juce::DocumentWindow ("Auralis by Dj Maksy — " + tr ("render", ru), colours::bg, juce::DocumentWindow::closeButton | juce::DocumentWindow::minimiseButton),
+    : juce::DocumentWindow ("Auralis by DJ Maksy — " + tr ("render", ru), colours::bg, juce::DocumentWindow::closeButton | juce::DocumentWindow::minimiseButton),
       done (std::move (d))
 {
     content = std::make_unique<Content> (std::move (r), ru);
