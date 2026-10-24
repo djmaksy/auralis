@@ -594,14 +594,19 @@ void AuralisEditor::showExportMenu()
     juce::PopupMenu m;
     m.addItem (1, tr ("renderTrack", ru), proc.getTrack().existsAsFile());
     if (! proc.isStandalone()) m.addItem (2, tr ("autoBounce", ru), true, pr.autoOnBounce);
+    juce::PopupMenu br;
+    for (int i = 0; i < ExportPrefs::kBitrateCount; ++i)
+        br.addItem (100 + i, i == 0 ? tr ("bitrateAuto", ru) : juce::String (ExportPrefs::bitrateMbps (i)) + " Mbps", true, pr.bitrate == i);
     m.addSeparator();
+    m.addSubMenu (tr ("bitrate", ru) + ":  " + (pr.bitrate == 0 ? tr ("bitrateAuto", ru) : juce::String (ExportPrefs::bitrateMbps (pr.bitrate)) + " Mbps"), br);
     m.addItem (3, tr ("outFolder", ru));
     if (! proc.isStandalone()) m.addItem (4, tr ("fileName", ru));
     m.addItem (5, tr ("openFolder", ru));
     m.showMenuAsync (juce::PopupMenu::Options().withTargetComponent (&exportBtn), [this] (int r)
     {
         auto p = proc.prefs();
-        if (r == 1) renderTrack();
+        if (r >= 100 && r < 100 + ExportPrefs::kBitrateCount) { p.bitrate = r - 100; proc.setPrefs (p); }
+        else if (r == 1) renderTrack();
         else if (r == 2) { p.autoOnBounce = ! p.autoOnBounce; proc.setPrefs (p); }
         else if (r == 3)
         {

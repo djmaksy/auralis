@@ -41,7 +41,9 @@ bool ExportJob::begin (juce::String& err)
     VideoWriterSettings vs;
     vs.path = req.outFile.getFullPathName().toStdString();
     vs.width = req.width; vs.height = req.height; vs.fps = req.fps;
-    vs.videoBitrate = (int) std::min (80.0e6, (double) req.width * req.height * req.fps * 0.20);
+    vs.videoBitrate = req.videoBitrateMbps > 0 ? req.videoBitrateMbps * 1000000
+                                               : (int) std::min (80.0e6, (double) req.width * req.height * req.fps * 0.20);
+    vs.constantQuality = req.videoBitrateMbps <= 0;
     vs.sampleRate = sr; vs.channels = 2;
     vs.audioFile = req.audioFile.getFullPathName().toStdString();
     vs.audioStart = (double) startSample / sr; vs.duration = seconds;

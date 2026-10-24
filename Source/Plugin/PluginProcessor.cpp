@@ -164,6 +164,7 @@ ExportRequest AuralisProcessor::makeExportRequest (const juce::File& audio, cons
     const auto p = prefs();
     p.frameSize (r.width, r.height);
     r.fps = ExportPrefs::fpsValue (p.fps);
+    r.videoBitrateMbps = ExportPrefs::bitrateMbps (p.bitrate);
     r.state = snapshot();
     return r;
 }
@@ -322,6 +323,7 @@ juce::var AuralisProcessor::toVar() const
     o->setProperty ("recLang", recognitionLanguage);
     auto* e = new juce::DynamicObject();
     e->setProperty ("aspect", p.aspect); e->setProperty ("res", p.resolution); e->setProperty ("fps", p.fps);
+    e->setProperty ("bitrate", p.bitrate);
     e->setProperty ("auto", p.autoOnBounce); e->setProperty ("folder", juce::String::fromUTF8 (p.folder.c_str()));
     e->setProperty ("name", juce::String::fromUTF8 (p.fileName.c_str()));
     o->setProperty ("export", juce::var (e));
@@ -347,6 +349,7 @@ void AuralisProcessor::fromVar (const juce::var& v)
     {
         p.aspect = juce::jlimit (0, 2, (int) e["aspect"]); p.resolution = juce::jlimit (0, 3, (int) e["res"]);
         p.fps = juce::jlimit (0, 4, (int) e["fps"]); p.autoOnBounce = (bool) e["auto"];
+        p.bitrate = juce::jlimit (0, ExportPrefs::kBitrateCount - 1, (int) e["bitrate"]);
         p.folder = e["folder"].toString().toStdString(); p.fileName = e["name"].toString().toStdString();
     }
     setPrefs (p);

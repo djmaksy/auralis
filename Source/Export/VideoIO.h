@@ -24,6 +24,7 @@ struct VideoWriterSettings
     int width = 1920, height = 1080;
     double fps = 30;
     int videoBitrate = 12000000;
+    bool constantQuality = true;  // ffmpeg: CRF instead of a fixed bitrate
     double sampleRate = 48000;
     int channels = 2;
     std::string audioFile;      // used by the ffmpeg backend (audio is muxed from this file)

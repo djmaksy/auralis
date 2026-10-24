@@ -295,15 +295,18 @@ void Sim3D::updateShatter (const SoundFrame& sf, const Scene& sc)
 }
 
 // ============================================================================ TextSim
-void TextSim::setTargets (std::vector<TextTarget> t, unsigned seed, float dotSize)
+void TextSim::setTargets (std::vector<TextTarget> t, unsigned seed, float dotSize, int appearMode)
 {
     tg = std::move (t);
     dot = dotSize;
+    mode = appearMode;
+    age = 0.f;
     pt.resize (tg.size());
     for (size_t i = 0; i < tg.size(); ++i)
     {
         const float a = hash1 ((unsigned) i * 3u + seed * 101u) * 2.f * PI, r = 0.35f + 1.1f * hash1 ((unsigned) i * 5u + seed * 37u);
-        pt[i] = { tg[i].x + std::cos (a) * r, tg[i].y + std::sin (a) * r * 0.6f, 0.f, 0.f };
+        pt[i] = mode == 0 ? Pt { tg[i].x + std::cos (a) * r, tg[i].y + std::sin (a) * r * 0.6f, 0.f, 0.f }
+                          : Pt { tg[i].x, tg[i].y, 0.f, 0.f };
     }
 }
 
@@ -313,7 +316,8 @@ void TextSim::update (const SoundFrame& sf, const Scene& sc, int litWord)
     if (tg.empty()) return;
     const float react = 0.8f, bright = sc[P::txBright];
     const float shake = (0.10f * sf.treble + 0.35f * sf.beat) * react;
-    float dt = (float) std::min (sf.dt, 0.05); const int steps = dt > 1.f / 55.f ? 2 : 1; dt /= (float) steps;
+    age += (float) sf.dt;
+    float dt = (float) std::min (sf.dt, 0.05); const int steps = mode != 0 ? 0 : (dt > 1.f / 55.f ? 2 : 1); dt /= (float) std::max (1, steps);
     for (int s = 0; s < steps; ++s)
     {
         ++frame;
@@ -333,7 +337,8 @@ void TextSim::update (const SoundFrame& sf, const Scene& sc, int litWord)
     for (size_t i = 0; i < pt.size(); ++i)
     {
         const bool sung = tg[i].word <= litWord && litWord >= 0;
-        const float k = sung ? (1.0f + 0.5f * sf.beat) * bright : 0.72f * bright;
+        float k = sung ? (mode == 2 ? 1.0f : 1.0f + 0.5f * sf.beat) * bright : 0.72f * bright;
+        if (mode == 1) { const float f = std::min (1.f, age / 0.35f); k *= f * f * (3.f - 2.f * f); }
         verts.push_back ({ pt[i].x, pt[i].y, 0.f, (sung ? sr : ur) * k, (sung ? sg : ug) * k, (sung ? sb : ub) * k, sung ? dot * 1.2f : dot });
     }
 }

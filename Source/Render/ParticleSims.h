@@ -43,7 +43,8 @@ struct TextTarget { float x, y; int word; };
 class TextSim
 {
 public:
-    void setTargets (std::vector<TextTarget> t, unsigned seed, float dotSize = 0.0035f);
+    // mode: 0 = particles fly in and shimmer, 1 = fade in in place, 2 = appear instantly (static)
+    void setTargets (std::vector<TextTarget> t, unsigned seed, float dotSize = 0.0035f, int mode = 0);
     void clear() { tg.clear(); pt.clear(); verts.clear(); }
     void update (const SoundFrame& sf, const Scene& sc, int litWord);
 
@@ -56,6 +57,8 @@ private:
     std::vector<Pt> pt;
     unsigned frame = 0;
     float dot = 0.0035f;
+    int mode = 0;
+    float age = 0.f;
 };
 
 float hash1 (unsigned n);                 // 0..1

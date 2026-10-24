@@ -17,6 +17,7 @@ struct ExportRequest
     juce::File outFile;
     int width = 1920, height = 1080;
     double fps = 30;
+    int videoBitrateMbps = 0;      // 0 = automatic (quality-based)
     SceneState state;
     bool preferFfmpeg = false;
 };

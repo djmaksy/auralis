@@ -140,6 +140,9 @@ int main()
         double err = 0; for (size_t i = 0; i < t.size(); ++i) err += std::hypot (ts.verts[i].x - t[i].x, ts.verts[i].y - t[i].y);
         err /= (double) t.size(); std::printf ("text settle error %.4f\n", err);
         CHECK (err < 0.05);
+        TextSim inst; inst.setTargets (t, 1, 0.003f, 2); inst.update (a[0], sc, 0);
+        double e2 = 0; for (size_t i = 0; i < t.size(); ++i) e2 += std::hypot (inst.verts[i].x - t[i].x, inst.verts[i].y - t[i].y);
+        CHECK (e2 == 0.0);
     }
 
     std::printf (failures ? "%d FAILURES\n" : "ALL OK\n", failures);

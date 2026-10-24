@@ -51,6 +51,8 @@ const ParamInfo table[] =
     TG (txShowLyrics,"tx.lyrics",    "TEXT", "Show lyrics", "Текст песни", 1.f),
     SL (txBright,    "tx.bright",    "TEXT", "Brightness", "Яркость", 0.2f, 2.f, 1.f),
     SL (txPanel,     "tx.panel",     "TEXT", "Backing panel", "Подложка", 0.f, 1.f, 0.6f),
+    CH (txAnim,      "tx.anim",      "TEXT", "Appearance", "Появление", 3, 0.f,
+        "Particles fly in|Fade in|Instant", "Частицы слетаются|Плавно|Сразу"),
 
     TG (orOn,        "or.on",        "ORNAMENT", "On", "Вкл", 0.f),
     CH (orMode,      "or.mode",      "ORNAMENT", "Motif", "Мотив", 3, 0.f,

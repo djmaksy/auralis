@@ -117,7 +117,8 @@ public:
             const double eta = job.progress() > 0.01 ? el / job.progress() - el : 0;
             s << tr ("rendering", ru) << "  " << rq.width << "x" << rq.height << " @ " << juce::String (rq.fps, 2).trimCharactersAtEnd ("0").trimCharactersAtEnd (".")
               << " fps  ·  " << (int) job.frames() << " / " << (int) job.totalFrameCount()
-              << "  ·  " << juce::String (job.progress() * 100.0, 1) << "%  ·  ~" << (int) eta << " s  ·  " << job.backendName();
+              << "  ·  " << juce::String (job.progress() * 100.0, 1) << "%  ·  ~" << (int) eta << " s  ·  "
+              << (rq.videoBitrateMbps > 0 ? juce::String (rq.videoBitrateMbps) + " Mbps" : juce::String ("auto")) << "  ·  " << job.backendName();
         }
         info.setText (s, juce::dontSendNotification);
         const bool fin = isFinished();

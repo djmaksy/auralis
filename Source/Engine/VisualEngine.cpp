@@ -60,7 +60,7 @@ void VisualEngine::updateText (const SoundFrame& sf, const SceneState& st, const
 
     const float mn = (float) std::min (W, H);
     const float fw = (float) W / mn, fh = (float) H / mn;
-    char sz[96]; std::snprintf (sz, sizeof sz, "|%.3f|%.3f|%.3f|%.3f", eff[P::txSize], st.scene[P::txPosY], fw, fh);
+    char sz[112]; std::snprintf (sz, sizeof sz, "|%.3f|%.3f|%.3f|%.3f|%d", eff[P::txSize], st.scene[P::txPosY], fw, fh, st.scene.choice (P::txAnim));
     key += sz;
 
     if (key != textKey)
@@ -68,7 +68,7 @@ void VisualEngine::updateText (const SoundFrame& sf, const SceneState& st, const
         textKey = key;
         auto lay = layoutWords (words, fw, fh, st.scene[P::txSize], st.scene[P::txPosY], 9000);
         std::copy (std::begin (lay.box), std::end (lay.box), std::begin (boxCache));
-        r.text.setTargets (std::move (lay.targets), ++textSeed, lay.dotSize);
+        r.text.setTargets (std::move (lay.targets), ++textSeed, lay.dotSize, st.scene.choice (P::txAnim));
     }
     ts.visible = r.text.hasTargets();
     ts.litWord = lit;

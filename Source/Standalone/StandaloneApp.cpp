@@ -152,6 +152,8 @@ private:
         req.lengthSec = arg (a, "--seconds", "-1").getDoubleValue();
         req.timelineStart = req.startSec;
         req.preferFfmpeg = a.contains ("--ffmpeg");
+        req.videoBitrateMbps = arg (a, "--bitrate", "0").getIntValue();
+        if (a.contains ("--text-instant")) req.state.scene[P::txAnim] = 2.f;
         std::printf ("Auralis: rendering %s -> %s  (%dx%d @ %.0f fps, preset %d \"%s\")\n", in.getFileName().toRawUTF8(), out.getFullPathName().toRawUTF8(),
                      req.width, req.height, req.fps, idx + 1, fp[(size_t) idx].en.c_str());
         std::fflush (stdout);

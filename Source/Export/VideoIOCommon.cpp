@@ -73,7 +73,10 @@ public:
             char ab[128]; std::snprintf (ab, sizeof ab, " -ss %.6f -t %.6f -i ", s.audioStart, s.duration);
             cmd += ab + q (s.audioFile) + " -map 0:v -map 1:a -c:a aac -b:a 320k";
         }
-        char vb[160]; std::snprintf (vb, sizeof vb, " -c:v libx264 -preset medium -crf 17 -pix_fmt yuv420p -profile:v high -movflags +faststart -shortest ");
+        char rate[96];
+        if (s.constantQuality) std::snprintf (rate, sizeof rate, "-crf 17");
+        else std::snprintf (rate, sizeof rate, "-b:v %d -maxrate %d -bufsize %d", s.videoBitrate, s.videoBitrate, s.videoBitrate * 2);
+        char vb[256]; std::snprintf (vb, sizeof vb, " -c:v libx264 -preset medium %s -pix_fmt yuv420p -profile:v high -movflags +faststart -shortest ", rate);
         cmd += vb + q (s.path);
        #if JUCE_WINDOWS
         cmd = "\"" + cmd + "\"";

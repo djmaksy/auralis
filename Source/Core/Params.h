@@ -15,7 +15,7 @@ enum class P : int
     // 3D
     d3On, d3Mode, d3Count, d3Size, d3Speed, d3Hue, d3Sat, d3React, d3Cam, d3Attr,
     // TEXT
-    txOn, txSize, txPosY, txHue, txSat, txSungHue, txShowLyrics, txBright, txPanel,
+    txOn, txSize, txPosY, txHue, txSat, txSungHue, txShowLyrics, txBright, txPanel, txAnim,
     // ORNAMENT
     orOn, orMode, orSize, orHue, orSat, orReact, orSpin,
     // OPTICS

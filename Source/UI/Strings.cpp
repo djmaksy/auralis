@@ -31,6 +31,8 @@ juce::String tr (const char* key, bool ru)
         { "dropHint",    { "Drop a track, video, image, .txt or .lrc here", "Бросьте сюда трек, видео, картинку, .txt или .lrc" } },
         { "renderTrack", { "Render loaded track to MP4…", "Рендер загруженного трека в MP4…" } },
         { "autoBounce",  { "Render video automatically on DAW audio export", "Делать видео автоматически при экспорте звука в DAW" } },
+        { "bitrate",     { "Video bitrate", "Битрейт видео" } },
+        { "bitrateAuto", { "Auto (by quality)", "Авто (по качеству)" } },
         { "outFolder",   { "Output folder…", "Папка для видео…" } },
         { "openFolder",  { "Open output folder", "Открыть папку с видео" } },
         { "fileName",    { "File name for DAW export…", "Имя файла при экспорте из DAW…" } },
