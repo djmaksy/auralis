@@ -52,6 +52,7 @@ void AuralisEditor::Logo::paint (juce::Graphics& g)
     g.setGradientFill (juce::ColourGradient (colours::accent2, cx, cy, colours::accent2.withAlpha (0.f), cx + r * 0.6f, cy, true));
     g.fillEllipse (cx - r * 0.6f, cy - r * 0.6f, r * 1.2f, r * 1.2f);
 
+    if (! showText) return;
     const float tx = cx + r + 9.f;
     g.setColour (colours::accent);
     g.setFont (juce::FontOptions (h * 0.48f, juce::Font::bold));
@@ -62,6 +63,65 @@ void AuralisEditor::Logo::paint (juce::Graphics& g)
     g.setColour (colours::dim);
     g.setFont (juce::FontOptions (h * 0.24f));
     g.drawText ("v" JucePlugin_VersionString, juce::Rectangle<float> (tx + 1.f, h * 0.58f, (float) getWidth() - tx - 2.f, h * 0.36f), juce::Justification::topRight);
+}
+
+// ============================================================================ about dialog
+class AboutBox : public juce::Component
+{
+public:
+    explicit AboutBox (bool ru)
+    {
+        mark.showText = false;
+        mark.setInterceptsMouseClicks (false, false);
+        addAndMakeVisible (mark);
+        auto setup = [this] (juce::Label& l, const juce::String& t, float size, juce::Colour c, int style = juce::Font::plain)
+        {
+            l.setText (t, juce::dontSendNotification);
+            l.setFont (juce::FontOptions (size, style));
+            l.setColour (juce::Label::textColourId, c);
+            addAndMakeVisible (l);
+        };
+        setup (name, juce::String ("AURALIS ") + JucePlugin_VersionString, 26.f, colours::text);
+        setup (by, "by DJ Maksy", 15.f, colours::accent, juce::Font::italic);
+        setup (releasedL, tr ("released", ru), 14.f, colours::dim);
+        setup (releasedV, AURALIS_RELEASE_DATE, 14.f, colours::text);
+        setup (copy, tr ("copyright", ru) + juce::String (juce::CharPointer_UTF8 (" \xc2\xa9 2026 DJ Maksy")), 14.f, colours::text);
+        site.setButtonText ("djmaksy.com");
+        site.setURL (juce::URL ("https://djmaksy.com"));
+        site.setFont (juce::FontOptions (17.f), false, juce::Justification::centredLeft);
+        site.setColour (juce::HyperlinkButton::textColourId, colours::accent2);
+        site.setTooltip ("https://djmaksy.com");
+        addAndMakeVisible (site);
+        setSize (470, 190);
+    }
+    void paint (juce::Graphics& g) override { g.fillAll (colours::panel); }
+    void resized() override
+    {
+        mark.setBounds (14, 26, 136, 136);
+        const int x = 172;
+        name.setBounds (x, 20, getWidth() - x - 10, 34);
+        by.setBounds (x + 2, 52, 200, 20);
+        releasedL.setBounds (x, 84, 100, 22);
+        releasedV.setBounds (x + 100, 84, 150, 22);
+        copy.setBounds (x, 116, getWidth() - x - 10, 22);
+        site.setBounds (x, 142, 130, 26);
+    }
+private:
+    AuralisEditor::Logo mark;
+    juce::Label name, by, releasedL, releasedV, copy;
+    juce::HyperlinkButton site;
+};
+
+void AuralisEditor::showAbout()
+{
+    juce::DialogWindow::LaunchOptions o;
+    o.content.setOwned (new AboutBox (proc.russian));
+    o.dialogTitle = tr ("about", proc.russian);
+    o.dialogBackgroundColour = colours::panel;
+    o.useNativeTitleBar = true;
+    o.resizable = false;
+    o.componentToCentreAround = this;
+    o.launchAsync();
 }
 
 // ============================================================================ lyrics dialog
@@ -153,10 +213,11 @@ AuralisEditor::AuralisEditor (AuralisProcessor& p) : AudioProcessorEditor (p), p
     addAndMakeVisible (*content);
     auto add = [this] (juce::Component& c) { content->addAndMakeVisible (c); };
 
-    logo.setInterceptsMouseClicks (false, false);
+    logo.onClick = [this] { showAbout(); };
+    logo.setMouseCursor (juce::MouseCursor::PointingHandCursor);
     add (logo);
 
-    for (auto* b : { &prevBtn, &nextBtn, &saveBtn, &delBtn, &exportBtn, &langBtn, &fullBtn, &gearBtn, &minBtn, &closeBtn,
+    for (auto* b : { &prevBtn, &nextBtn, &saveBtn, &delBtn, &exportBtn, &langBtn, &aboutBtn, &fullBtn, &gearBtn, &minBtn, &closeBtn,
                      &openBtn, &playBtn, &lyricsBtn, &loadLyricsBtn, &saveLrcBtn, &recBtn }) add (*b);
     for (auto* c : { &presetBox, &aspectBox, &resBox, &fpsBox, &langBox }) add (*c);
     add (timeLabel); add (statusLabel); add (titleLabel); add (titleEdit); add (offsetSlider); add (offsetLabel);
@@ -171,6 +232,8 @@ AuralisEditor::AuralisEditor (AuralisProcessor& p) : AudioProcessorEditor (p), p
     exportBtn.onClick = [this] { showExportMenu(); };
     langBtn.onClick = [this] { proc.russian = ! proc.russian; relabel(); };
     fullBtn.onClick = [this] { toggleFullscreen(); };
+    aboutBtn.onClick = [this] { showAbout(); };
+    aboutBtn.setButtonText ("i");
     gearBtn.onClick = [this] { if (proc.showAudioSettings) proc.showAudioSettings(); };
     minBtn.onClick = [this] { if (auto* peer = getPeer()) peer->setMinimised (true); };
     closeBtn.onClick = [] { if (auto* app = juce::JUCEApplicationBase::getInstance()) app->systemRequestedQuit(); };
@@ -263,6 +326,7 @@ void AuralisEditor::resized()
     if (proc.isStandalone()) { closeBtn.setBounds (h.removeFromRight (32)); h.removeFromRight (4); minBtn.setBounds (h.removeFromRight (32)); h.removeFromRight (10);
                                gearBtn.setBounds (h.removeFromRight (36)); h.removeFromRight (6); }
     fullBtn.setBounds (h.removeFromRight (36)); h.removeFromRight (6);
+    aboutBtn.setBounds (h.removeFromRight (36)); h.removeFromRight (6);
     langBtn.setBounds (h.removeFromRight (48)); h.removeFromRight (14);
     exportBtn.setBounds (h.removeFromRight (100)); h.removeFromRight (8);
     fpsBox.setBounds (h.removeFromRight (82)); h.removeFromRight (4);
@@ -306,7 +370,7 @@ void AuralisEditor::relabel()
     recBtn.setButtonText (tr ("recognise", ru));
     titleLabel.setText (tr ("title", ru), juce::dontSendNotification);
     offsetLabel.setText (tr ("offset", ru), juce::dontSendNotification);
-    fullBtn.setTooltip (tr ("fullscreen", ru)); gearBtn.setTooltip (tr ("audioSettings", ru));
+    fullBtn.setTooltip (tr ("fullscreen", ru)); aboutBtn.setTooltip (tr ("about", ru)); gearBtn.setTooltip (tr ("audioSettings", ru));
     langBox.clear (juce::dontSendNotification);
     int id = 1;
     for (auto& l : recognitionLanguages()) langBox.addItem (juce::String::fromUTF8 (ru ? l.ru : l.en), id++);

@@ -48,6 +48,7 @@ private:
     void startRecognition();
     void runRecognition();
     void toggleFullscreen();
+    void showAbout();
     void chooseVideo();
     void setStatus (const juce::String& s, bool error = false);
     juce::Array<juce::File> userPresets() const;
@@ -61,9 +62,18 @@ private:
     std::unique_ptr<Timeline> timeline;
     std::unique_ptr<FullscreenWindow> fullscreen;
 
-    class Logo : public juce::Component { public: void paint (juce::Graphics&) override; };
+public:
+    class Logo : public juce::Component
+    {
+    public:
+        void paint (juce::Graphics&) override;
+        void mouseUp (const juce::MouseEvent&) override { if (onClick) onClick(); }
+        std::function<void()> onClick;
+        bool showText = true;
+    };
+private:
     Logo logo;
-    juce::TextButton prevBtn { "<" }, nextBtn { ">" }, saveBtn, delBtn, exportBtn, langBtn, fullBtn, gearBtn, minBtn { "-" }, closeBtn { "x" };
+    juce::TextButton prevBtn { "<" }, nextBtn { ">" }, saveBtn, delBtn, exportBtn, langBtn, aboutBtn, fullBtn, gearBtn, minBtn { "-" }, closeBtn { "x" };
     juce::ComboBox presetBox, aspectBox, resBox, fpsBox;
     juce::TextButton openBtn, playBtn, lyricsBtn, loadLyricsBtn, saveLrcBtn, recBtn;
     juce::ComboBox langBox;

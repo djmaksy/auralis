@@ -6,6 +6,10 @@ the app header and the GitHub release all take it from there.
 Каждая правка получает свой номер версии. Он хранится в файле `VERSION`; оттуда его берут сборка,
 установщик, шапка программы и релиз на GitHub.
 
+## 1.4.0
+- "About Auralis" window: version, release date, copyright DJ Maksy and a clickable link to djmaksy.com. Opens with the "i" button in the header or by clicking the logo.
+- Окно «О программе Auralis»: версия, дата выпуска, авторские права DJ Maksy и кликабельная ссылка djmaksy.com. Открывается кнопкой «i» в шапке или щелчком по логотипу.
+
 ## 1.3.0
 - Version number shown in the app header (next to the logo) and in the installer name.
 - Every version is published as its own GitHub release (`v1.3.0`, …) with these notes.
