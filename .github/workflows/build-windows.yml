@@ -1,0 +1,51 @@
+name: Build Windows
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  windows:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get ASIO SDK (optional — enables ASIO in the app)
+        shell: pwsh
+        continue-on-error: true
+        run: |
+          Invoke-WebRequest -Uri "https://download.steinberg.net/sdk_downloads/asiosdk_2.3.3_2019-06-14.zip" -OutFile asio.zip
+          Expand-Archive asio.zip -DestinationPath asio
+          $dir = (Get-ChildItem asio -Directory | Select-Object -First 1).FullName
+          "ASIO_SDK=$dir" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Configure
+        shell: pwsh
+        run: |
+          $asio = if ($env:ASIO_SDK) { "-DAURALIS_ASIO_SDK=$env:ASIO_SDK" } else { "" }
+          cmake -S . -B build -G "Visual Studio 17 2022" -A x64 $asio
+
+      - name: Build
+        run: cmake --build build --config Release --parallel --target Auralis_VST3 Auralis_Standalone auralis_core_tests
+
+      - name: Unit tests
+        run: ctest --test-dir build -C Release --output-on-failure
+
+      - name: Package
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force dist | Out-Null
+          Copy-Item build/Auralis_artefacts/Release/Standalone/Auralis.exe dist/
+          Copy-Item -Recurse build/Auralis_artefacts/Release/VST3/Auralis.vst3 dist/
+          Copy-Item README.md dist/
+          Compress-Archive -Path dist/* -DestinationPath Auralis-Windows-x64.zip
+          choco install innosetup --no-progress -y
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer/Auralis.iss
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Auralis-Windows-x64
+          path: |
+            Auralis-Windows-x64.zip
+            installer/Output/*.exe

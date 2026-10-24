@@ -1,0 +1,6 @@
+build/
+ext/
+dist/
+installer/Output/
+*.mp4
+.vs/
