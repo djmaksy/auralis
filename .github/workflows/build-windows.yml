@@ -63,7 +63,7 @@ jobs:
           New-Item -ItemType Directory -Force dist | Out-Null
           Copy-Item build/Auralis_artefacts/Release/Standalone/Auralis.exe dist/
           Copy-Item -Recurse build/Auralis_artefacts/Release/VST3/Auralis.vst3 dist/
-          Copy-Item README.md dist/
+          Copy-Item README.md dist/; Copy-Item README.ru.md dist/
           Compress-Archive -Path dist/* -DestinationPath Auralis-Windows-x64.zip
           if (-not (Test-Path "C:\Program Files (x86)\Inno Setup 6\ISCC.exe")) { choco install innosetup --no-progress -y }
           & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer/Auralis.iss

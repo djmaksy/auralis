@@ -1,93 +1,103 @@
-# Auralis by DJ Maksy — аудиовизуализатор (VST3 + приложение для Windows)
+# Auralis by DJ Maksy — audio visualizer (VST3 + Windows app)
 
-Ставится последним на мастер-шину в любой DAW, превращает микс в живую картинку и рендерит её
-кадр за кадром в MP4 со звуком, вплоть до 4K. Есть отдельное приложение, работающее без DAW.
+**English** · [Русский](README.ru.md)
 
-## Что умеет
+Put it last on the master bus in any DAW: it turns your mix into living visuals and renders them
+frame by frame into an MP4 with your audio, up to 4K. A standalone app works without a DAW.
 
-| Функция | Как сделано |
+## Download
+
+Latest Windows build: **[Releases → latest](https://github.com/djmaksy/auralis/releases/tag/latest)**
+
+- `Auralis-1.0.0-Setup.exe` — installer (app + VST3 plug-in)
+- `Auralis-Windows-x64.zip` — `Auralis.exe` and `Auralis.vst3` without an installer
+
+Windows SmartScreen may warn about an unknown publisher because the build is not code-signed:
+click **More info → Run anyway**. Close your DAW before installing an update.
+
+## Features
+
+| Feature | Details |
 |---|---|
-| Плагин VST3 + отдельное приложение | JUCE 8, один код для обоих форматов |
-| Анализ звука: 64 полосы спектра, бас/середина/верх, удары, стерео-ширина, темп и позиция в такте от хоста | `Source/Core/Analyzer.*`: FFT 4096, детектор атак, сглаживание |
-| **Слои**: ФОН — озеро-жидкость, туманности, полёт, северное сияние, ретро-сетка | GLSL-шейдеры, `Source/Render/Shaders.h` |
-| СПЕКТР — полярное кольцо, неоновая линия, соты | шейдеры |
-| 3D — морфинг частиц, curl-потоки, странные аттракторы (Лоренц / Айзава / Томас), рельеф спектра, разлом сферы | до 43 000 частиц, `ParticleSims.*` |
-| ТЕКСТ — надпись и текст песни из частиц, 5 письменностей (латиница, кириллица, армянская, грузинская, арабская справа налево со связным письмом) | шрифты Noto встроены, раскладка по словам, `TextLayout.*` |
-| ОРНАМЕНТ — аревахач, хачкар, борджгали | процедурно, `Ornaments.cpp` |
-| ОПТИКА — свечение (bloom), боке, хроматизм, виньетка, экспозиция | постобработка |
-| ВИДЕО — свой ролик или картинка: во весь кадр или в рамке, цветокоррекция, зерно, строки, аберрация, замедление, скачки по битам | Media Foundation (Windows) |
-| Модуляция любого ползунка от баса/середины/верха/ударов/громкости/LFO по доле и такту | ПКМ по ползунку |
-| 62 пресета + свои пресеты | `Presets.cpp`, свои — в `%APPDATA%\Auralis\Presets` |
-| Текст песни: вставить текст → автосинхронизация с голосом (17 языков + автоопределение), или .lrc | whisper.cpp + выравнивание слов, `Lyrics.*`, `Recognizer.*` |
-| Цвет обычных слов и цвет спетого слова, подложка под текстом по яркости сцены | слой ТЕКСТ |
-| Экспорт: 16:9, 9:16, 1:1; 720p / 1080p / 1440p / 4K; 24–60 fps; геометрия по короткой стороне (вертикаль не обрезается) | `ExportJob.*` |
-| **Экспорт из DAW без «Create Video»**: просто сделайте экспорт звука — плагин сам соберёт MP4 | детектор офлайн-рендера хоста |
-| Кадр в кадр, время привязано к сэмплам: повторный экспорт даёт идентичные кадры | проверено тестом |
-| Drag & drop: трек, видео, картинка, .txt, .lrc, пресет | в любое место окна |
-| Полный экран — клавиша **D** (или двойной щелчок по картинке) | |
-| RU / EN, масштабирование окна до 2× | |
-| Приложение: безрамочное окно, выбор аудиоустройства и ASIO в «шестерёнке», вход с микрофона | |
-| Рендер из командной строки | `Auralis.exe --render song.wav --out video.mp4 --preset 5 --res 1080 --aspect 9:16 --lyrics song.lrc` |
+| VST3 plug-in + standalone app | JUCE 8, one codebase for both |
+| Sound analysis: 64 spectrum bands, lows/mids/highs, transients, stereo width, host tempo and bar position | `Source/Core/Analyzer.*`: 4096-point FFT, onset detector, smoothing |
+| **Layers**: BACKGROUND — liquid lake, nebulae, flight, northern lights, retro grid | GLSL shaders, `Source/Render/Shaders.h` |
+| SPECTRUM — polar halo, neon line, hex cells | shaders |
+| 3D — particle morph, curl flow, strange attractors (Lorenz / Aizawa / Thomas), spectrum terrain, shattering sphere | up to 43,000 particles, `ParticleSims.*` |
+| TEXT — title and lyrics made of particles in 5 scripts (Latin, Cyrillic, Armenian, Georgian, Arabic right-to-left with joined letters) | Noto fonts embedded, word-level layout, `TextLayout.*` |
+| Text appearance: particles fly in / fade in / instant | TEXT layer → Appearance |
+| ORNAMENT — arevakhach, khachkar, borjgali | procedural, `Ornaments.cpp` |
+| OPTICS — bloom, bokeh, chromatic aberration, vignette, exposure | post-processing |
+| VIDEO — your own clip or image, full frame or framed, colour grading, grain, scanlines, aberration, slow motion, beat-synced jumps | Media Foundation (Windows) |
+| Modulate any slider from lows/mids/highs/hits/loudness/beat and bar LFOs | right-click a slider |
+| 62 factory presets + your own | your presets live in `%APPDATA%\Auralis\Presets` |
+| Lyrics: paste the text → auto-sync to the vocal (17 languages + auto-detect), or load an .lrc | whisper.cpp + word alignment, `Lyrics.*`, `Recognizer.*` |
+| Separate colours for regular and currently-sung words; backing panel follows scene brightness | TEXT layer |
+| Export: 16:9, 9:16, 1:1; 720p / 1080p / 1440p / 4K; 24–60 fps; selectable video bitrate (auto or 4–120 Mbps); geometry measured by the short side, so verticals are not cropped | `ExportJob.*` |
+| **Export from the DAW without "Create Video"**: just export the audio and the plug-in builds the MP4 itself | detects the host's offline render |
+| Frame-accurate, time locked to samples: re-exporting gives identical frames | covered by a test |
+| Drag & drop: track, video, image, .txt, .lrc, preset | anywhere on the window |
+| Full screen — **D** key (or double-click the picture) | |
+| RU / EN interface, window scales up to 2× | |
+| Standalone app: frameless window, audio device and ASIO in the gear menu, microphone input | |
+| Command-line render | `Auralis.exe --render song.wav --out video.mp4 --preset 5 --res 1080 --aspect 9:16 --lyrics song.lrc --bitrate 16` |
 
-Водяного знака и ограничений бесплатного режима нет — это ваша программа.
+## How to use
 
-## Сборка под Windows
+1. Insert Auralis **last** on the master bus.
+2. Pick a preset with the arrows in the header, switch layers on/off on the right and move the
+   sliders (double-click resets, right-click adds modulation).
+3. Lyrics: **Lyrics…** → paste the words → **Apply and sync to voice**. The first time, the app
+   offers to download the Whisper model (~470 MB, once). Audio for recognition comes from a
+   track dropped onto the window, or otherwise from what played through the plug-in. You can
+   also load a ready `.lrc`.
+4. Aspect, resolution and fps are in the header; bitrate, output folder and file name are in the
+   **Export** menu. In a DAW just export the audio — the video appears in `Videos\Auralis`.
+   In the app: **Export → Render loaded track to MP4**.
 
-Нужно: Windows 10/11 x64, Visual Studio 2022 (C++), CMake 3.22+, Git.
+Video is encoded with Windows' built-in Media Foundation (H.264 + AAC) — nothing extra to install.
+If `ffmpeg.exe` sits next to the app it is used as a fallback encoder (for example for vertical 4K,
+which some GPU encoders refuse).
+
+## Building from source
+
+Requirements: Windows 10/11 x64, Visual Studio 2022 (C++ workload), CMake 3.22+, Git.
 
 ```bat
 cmake -S . -B build -G "Visual Studio 17 2022" -A x64
 cmake --build build --config Release --target Auralis_VST3 Auralis_Standalone
 ```
 
-Результат:
-- `build\Auralis_artefacts\Release\Standalone\Auralis.exe` — приложение
-- `build\Auralis_artefacts\Release\VST3\Auralis.vst3` — скопируйте в `C:\Program Files\Common Files\VST3\`
+Output:
+- `build\Auralis_artefacts\Release\Standalone\Auralis.exe` — the app
+- `build\Auralis_artefacts\Release\VST3\Auralis.vst3` — copy to `C:\Program Files\Common Files\VST3\`
 
-JUCE и whisper.cpp скачиваются автоматически при первой настройке CMake.
+JUCE and whisper.cpp are downloaded automatically on the first CMake configure.
 
-Опции CMake:
-- `-DAURALIS_ASIO_SDK=путь\к\asiosdk` — ASIO в приложении (SDK бесплатно у Steinberg).
-- `-DAURALIS_WHISPER_VULKAN=ON` — распознавание текста на видеокарте (нужен Vulkan SDK).
-- `-DAURALIS_WITH_WHISPER=OFF` — собрать без распознавания.
+CMake options:
+- `-DAURALIS_ASIO_SDK=path\to\asiosdk` — ASIO in the app (free SDK from Steinberg).
+- `-DAURALIS_WHISPER_VULKAN=ON` — run lyrics recognition on the GPU (needs the Vulkan SDK).
+- `-DAURALIS_WITH_WHISPER=OFF` — build without recognition.
 
-**Без своей машины:** выложите папку в репозиторий GitHub — файл `.github/workflows/build-windows.yml`
-сам соберёт `Auralis.exe`, `Auralis.vst3`, zip и установщик (`installer/Auralis.iss`, Inno Setup).
+Every push to `main` is built by GitHub Actions (`.github/workflows/build-windows.yml`), which
+publishes the installer and zip to the `latest` release.
 
-## Как пользоваться
-
-1. Поставьте Auralis **последним** на мастер-шину.
-2. Выберите пресет стрелками в шапке, включите/выключите слои справа, двигайте ползунки
-   (двойной щелчок — сброс, ПКМ — модуляция).
-3. Текст песни: «Текст…» → вставьте слова → «Применить и синхронизировать». При первом
-   распознавании программа предложит скачать модель Whisper (~470 МБ, один раз).
-   Звук для распознавания берётся из брошенного в окно трека, а если его нет — из того, что
-   проигрывалось через плагин. Можно сразу загрузить готовый `.lrc`.
-4. Формат, разрешение и fps — в шапке. В DAW просто экспортируйте звук: видео появится в
-   `Видео\Auralis` (папку и имя меняются в меню «Экспорт»). В приложении — «Экспорт» →
-   «Рендер загруженного трека в MP4».
-
-Кодирование видео идёт через встроенный в Windows Media Foundation (H.264 + AAC), ничего
-доустанавливать не нужно. Если рядом с программой лежит `ffmpeg.exe`, он используется как
-запасной кодировщик (например, для вертикального 4K, который не принимают некоторые
-кодировщики видеокарт).
-
-## Структура
+## Project layout
 
 ```
-Source/Core       анализ звука, параметры, 62 пресета, модуляция (без зависимостей, покрыто тестами)
-Source/Render     OpenGL 3.2: шейдеры, частицы, текст, орнаменты, оптика
-Source/Engine     связка звук → кадр, мост аудиопоток → графика
-Source/Lyrics     LRC/TXT, выравнивание слов, распознавание (whisper.cpp)
-Source/Export     офлайн-рендер, Media Foundation / ffmpeg
-Source/UI         интерфейс
-Source/Standalone приложение и рендер из командной строки
-tests/            модульные тесты ядра
+Source/Core       sound analysis, parameters, 62 presets, modulation (no dependencies, unit-tested)
+Source/Render     OpenGL 3.2: shaders, particles, text, ornaments, optics
+Source/Engine     sound → frame pipeline, audio thread → graphics bridge
+Source/Lyrics     LRC/TXT, word alignment, recognition (whisper.cpp)
+Source/Export     offline render, Media Foundation / ffmpeg
+Source/UI         user interface
+Source/Standalone standalone app and command-line renderer
+tests/            core unit tests
 ```
 
-## Лицензии сторонних компонентов
+## Third-party licences
 
-- JUCE 8 — AGPLv3 или коммерческая лицензия JUCE. Для закрытого распространения/продажи нужна коммерческая лицензия JUCE.
-- whisper.cpp — MIT. Модели Whisper — MIT (OpenAI).
-- Шрифты Noto Sans (латиница/кириллица, армянский, грузинский, арабский) — SIL Open Font License 1.1.
-- ASIO — по лицензии Steinberg (не входит в исходники).
+- JUCE 8 — AGPLv3 or a commercial JUCE licence. Closed-source distribution or sale requires a commercial JUCE licence.
+- whisper.cpp — MIT. Whisper models — MIT (OpenAI).
+- Noto Sans fonts (Latin/Cyrillic, Armenian, Georgian, Arabic) — SIL Open Font License 1.1.
+- ASIO — Steinberg licence (not included in the sources).
