@@ -33,5 +33,6 @@ private:
     bool videoFailed = false;
     int lastBeatCount = -1;
     double jumpOffset = 0;
+    double lastAnimTime = -1.0;
 };
 }

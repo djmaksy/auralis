@@ -13,7 +13,7 @@ void VisualEngine::reset()
     r.text.clear();
     textKey.clear(); textSeed = 0;
     ts = TextState();
-    lastBeatCount = -1; jumpOffset = 0;
+    lastBeatCount = -1; jumpOffset = 0; lastAnimTime = -1.0;
     video.reset(); videoPath.clear(); videoFailed = false;
     r.clearVideo();
 }
@@ -101,8 +101,13 @@ void VisualEngine::updateVideo (const SoundFrame& sf, const Scene& eff)
     if (px && w > 0 && h > 0 && changed) r.setVideoFrame (px, w, h);
 }
 
-void VisualEngine::render (const SoundFrame& sf, const SceneState& st, int W, int H)
+void VisualEngine::render (const SoundFrame& sfIn, const SceneState& st, int W, int H)
 {
+    // Simulations advance by the real time between the frames we draw (not by one fixed step per draw),
+    // so text and particles move at the same speed whatever the drawing frame rate is.
+    SoundFrame sf = sfIn;
+    sf.dt = lastAnimTime < 0.0 ? sfIn.dt : std::clamp (sfIn.animTime - lastAnimTime, 0.0, 0.1);
+    lastAnimTime = sfIn.animTime;
     const Scene eff = applyModulation (st, sf);
     updateText (sf, st, eff, W, H);
     updateVideo (sf, eff);

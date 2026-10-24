@@ -6,6 +6,12 @@ the app header and the GitHub release all take it from there.
 Каждая правка получает свой номер версии. Он хранится в файле `VERSION`; оттуда его берут сборка,
 установщик, шапка программы и релиз на GitHub.
 
+## 1.4.1
+- Fixed: in the live preview, lyrics could stay a blurry streak of particles when the picture was drawn at a low frame rate (slow GPU, big window). Text, 3D particles and attractors now move by real time, not by the number of drawn frames.
+- New README with screenshots, an animated preview and a preset gallery.
+- Исправлено: в живом превью текст мог оставаться размытой полосой частиц, если картинка рисовалась с низкой частотой кадров (слабая видеокарта, большое окно). Текст, 3D-частицы и аттракторы теперь движутся по реальному времени, а не по числу нарисованных кадров.
+- Новый README со скриншотами, анимированным превью и галереей пресетов.
+
 ## 1.4.0
 - "About Auralis" window: version, release date, copyright DJ Maksy and a clickable link to djmaksy.com. Opens with the "i" button in the header or by clicking the logo.
 - Окно «О программе Auralis»: версия, дата выпуска, авторские права DJ Maksy и кликабельная ссылка djmaksy.com. Открывается кнопкой «i» в шапке или щелчком по логотипу.

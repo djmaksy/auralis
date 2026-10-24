@@ -161,7 +161,7 @@ void Sim3D::updateCurl (const SoundFrame& sf, const Scene& sc)
 {
     const float t = (float) sf.animTime, react = sc[P::d3React];
     const float speed = sc[P::d3Speed] * (0.45f + 0.9f * sf.level + 1.2f * sf.bass * react);
-    const float dt = (float) std::min (sf.dt, 0.05) * speed;
+    const float dt = (float) std::min (sf.dt, 0.1) * speed;
     verts.reserve (ps.size());
     for (size_t i = 0; i < ps.size(); ++i)
     {
@@ -195,8 +195,9 @@ void Sim3D::updateAttractor (const SoundFrame& sf, const Scene& sc)
     if (attr == 0) { dtBase = 0.0035f; scale = 0.048f; cy = 24.f; }
     else if (attr == 1) { dtBase = 0.0075f; scale = 0.95f; cy = 0.5f; }
     else { dtBase = 0.075f; scale = 0.42f; cy = 0.f; }
-    const int sub = 2;
-    const float dt = dtBase * speed;
+    const int steps120 = std::min (24, (int) std::lround (sf.dt * 120.0));
+    const int sub = std::max (1, steps120);            // always evaluate the field (it drives the colour)
+    const float dt = steps120 > 0 ? dtBase * speed : 0.f;
     const float pump = 1.f + 0.10f * sf.beat * react;
 
     verts.reserve (ps.size());
@@ -317,7 +318,9 @@ void TextSim::update (const SoundFrame& sf, const Scene& sc, int litWord)
     const float react = 0.8f, bright = sc[P::txBright];
     const float shake = (0.10f * sf.treble + 0.35f * sf.beat) * react;
     age += (float) sf.dt;
-    float dt = (float) std::min (sf.dt, 0.05); const int steps = mode != 0 ? 0 : (dt > 1.f / 55.f ? 2 : 1); dt /= (float) std::max (1, steps);
+    float dt = (float) std::min (sf.dt, 0.1);
+    const int steps = mode != 0 || dt <= 0.f ? 0 : std::min (8, (int) std::ceil (dt * 60.f - 1e-4f) * 2);
+    dt /= (float) std::max (1, steps);
     for (int s = 0; s < steps; ++s)
     {
         ++frame;
